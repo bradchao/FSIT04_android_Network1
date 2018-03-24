@@ -9,7 +9,11 @@ import android.net.NetworkInfo;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
+import android.view.View;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 
 public class MainActivity extends AppCompatActivity {
     private ConnectivityManager connectivityManager;
@@ -39,19 +43,39 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void initWebView(){
-        webView.loadUrl("file:///android_asset/brad.html");
 
+        webView.setWebViewClient(new WebViewClient());
 
+        WebSettings settings = webView.getSettings();
+        settings.setJavaScriptEnabled(true);
+
+        //webView.loadUrl("file:///android_asset/brad.html");
+        //webView.loadUrl("http://www.iii.org.tw");
+
+        webView.loadUrl("file:///android_asset/map.html");
 
 
 
     }
 
 
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        Log.v("brad", "keyCode = " + keyCode);
 
+        if (webView.canGoBack() && keyCode == KeyEvent.KEYCODE_BACK){
+            webView.goBack();
+            return false;
+        }else{
+            return super.onKeyDown(keyCode, event);
+        }
+
+        //return true; //super.onKeyDown(keyCode, event);
+    }
 
     @Override
     public void finish() {
+        Log.v("brad", "finish");
         if (receiver != null){
             unregisterReceiver(receiver);
         }
@@ -69,6 +93,11 @@ public class MainActivity extends AppCompatActivity {
                 connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
 
         return info.isConnected();
+    }
+
+    public void test1(View view) {
+        webView.loadUrl("javascript:gotoKD(24.157629,120.638895)");
+
     }
 
     private class MyNetworkBroadcast extends BroadcastReceiver {
