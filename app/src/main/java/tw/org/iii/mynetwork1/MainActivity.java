@@ -9,10 +9,12 @@ import android.net.NetworkInfo;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.webkit.WebView;
 
 public class MainActivity extends AppCompatActivity {
     private ConnectivityManager connectivityManager;
     private MyNetworkBroadcast receiver;
+    private WebView webView;
 
 
     @Override
@@ -30,7 +32,23 @@ public class MainActivity extends AppCompatActivity {
                 ConnectivityManager.CONNECTIVITY_ACTION);
         registerReceiver(receiver, filter);
 
+
+        webView = findViewById(R.id.webview);
+        initWebView();
     }
+
+
+    private void initWebView(){
+        webView.loadUrl("file:///android_asset/brad.html");
+
+
+
+
+
+    }
+
+
+
 
     @Override
     public void finish() {
