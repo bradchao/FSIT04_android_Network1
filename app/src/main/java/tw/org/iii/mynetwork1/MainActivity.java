@@ -1,6 +1,7 @@
 package tw.org.iii.mynetwork1;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -14,6 +15,8 @@ import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -22,10 +25,12 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.webkit.JavascriptInterface;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.Toast;
 
 import java.util.Map;
 
@@ -38,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
 
     private LocationManager lmgr;
     private MyLocationListener listener;
+    private UIHandler handler;
 
 
     @Override
@@ -74,6 +80,8 @@ public class MainActivity extends AppCompatActivity {
 
     private void init(){
 
+        handler = new UIHandler();
+
         lmgr = (LocationManager)getSystemService(LOCATION_SERVICE);
         listener = new MyLocationListener();
         lmgr.requestLocationUpdates(
@@ -104,7 +112,7 @@ public class MainActivity extends AppCompatActivity {
         public void onLocationChanged(Location location) {
             double lat = location.getLatitude();
             double lng = location.getLongitude();
-            Log.v("brad", lat + " : " + lng);
+            //Log.v("brad", lat + " : " + lng);
 
             webView.loadUrl(
                 "javascript:gotoKD("+ lat + "," + lng + ")");
@@ -134,21 +142,59 @@ public class MainActivity extends AppCompatActivity {
 
         WebSettings settings = webView.getSettings();
         settings.setJavaScriptEnabled(true);
+        settings.setJavaScriptCanOpenWindowsAutomatically(true);
+        settings.setAllowFileAccess(true);
+
+        webView.addJavascriptInterface(new MyJSBrad(),
+                "brad");
 
         //webView.loadUrl("file:///android_asset/brad.html");
         //webView.loadUrl("http://www.iii.org.tw");
 
-        webView.loadUrl("file:///android_asset/map.html");
+        webView.loadUrl("file:///android_asset/brad.html");
 
 
 
     }
 
+    public class MyJSBrad {
+        @JavascriptInterface
+        public void callFromJS(String name){
+            Log.v("brad", "from JS:" + name);
+
+            Message mesg = new Message();
+            Bundle data = new Bundle();
+            data.putString("name", name);
+            mesg.setData(data);
+            handler.sendMessage(mesg);
+
+//            Toast.makeText(MainActivity.this, name, Toast.LENGTH_SHORT)
+//                    .show();
+
+        }
+    }
+
+    private class UIHandler extends Handler {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+
+            String name = msg.getData().getString("name");
+            new AlertDialog.Builder(MainActivity.this)
+                    .setTitle("Message")
+                    .setMessage(name)
+                    .show();
+
+
+        }
+    }
+
+
     private class MyWebViewClient extends WebViewClient {
         @Override
         public boolean shouldOverrideUrlLoading(
                 WebView view, WebResourceRequest request) {
-            Log.v("brad", "shouldOverrideUrlLoading1" );
+            //Log.v("brad", "shouldOverrideUrlLoading1" );
 
 
 
