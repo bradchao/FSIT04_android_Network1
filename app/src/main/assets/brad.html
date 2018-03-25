@@ -3,6 +3,14 @@
         var here = document.getElementById("here");
         here.innerHTML = parseInt(Math.random()*49+1);
     }
+    function test2(){
+        var input = document.getElementById("test2").value;
+        /*
+        var here = document.getElementById("here");
+        here.innerHTML = input;
+        */
+        alert(input);
+    }
 </script>
 <h1>Brad Big Company</h1>
 <hr />
@@ -12,3 +20,5 @@ Hello, Brad
 <img src="imgs/a2.png" />
 <hr />
 <div id="here"></div>
+<input id="test2" type="text" />
+<input type="button" onclick="test2()" value="Click Me"/>

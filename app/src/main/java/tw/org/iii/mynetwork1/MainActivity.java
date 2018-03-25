@@ -105,6 +105,9 @@ public class MainActivity extends AppCompatActivity {
             double lat = location.getLatitude();
             double lng = location.getLongitude();
             Log.v("brad", lat + " : " + lng);
+
+            webView.loadUrl(
+                "javascript:gotoKD("+ lat + "," + lng + ")");
         }
 
         @Override
